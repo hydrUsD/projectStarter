@@ -1,10 +1,16 @@
 import { authkitMiddleware } from "@workos-inc/authkit-nextjs";
 
-// Protect only '/' for now (adjust matcher later)
-export default authkitMiddleware({
-	// Use env, fall back to localhost for dev:
-    redirectUri: process.env.NEXT_PUBLIC_WORKOS_REDIRECT_URI ?? "http://localhost:3000/callback",
+export const middleware = authkitMiddleware({
+  redirectUri: process.env.NEXT_PUBLIC_AUTHKIT_REDIRECT_URI ?? 'http://localhost:3000/callback',
+  middlewareAuth: {
+    enabled: true,
+    unauthenticatedPaths: [
+      '/',        // allow home page when signed out
+      '/login',   // allow the login route
+      '/callback',// allow OAuth callback
+      '/debug-auth', // if you want to test, getSignInUrl
+    ],
+  },
 });
-export const config = {
-	matcher: ["/((?!_next/|.*\\..*)*)"],
-};
+
+export const config = { matcher: ['/', '/account/:page*', '/api/:page*', '/callback'] };
